@@ -1,28 +1,51 @@
 package com.game.repository;
 
 import com.game.entity.Player;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import jakarta.persistence.*;
+
 
 @Repository(value = "db")
 public class PlayerRepositoryDB implements IPlayerRepository {
 
-    public PlayerRepositoryDB() {
+    private final SessionFactory sessionFactory;
 
+    public PlayerRepositoryDB() {
+        Properties properties = new Properties();
+        properties.put(Environment.DRIVER,"com.mysql.jdbc.Driver");
+        properties.put(Environment.URL,"jdbc:mysql://localhost:3306");
+        properties.put(Environment.USER,"user");
+        properties.put(Environment.PASS,"user");
+        properties.put(Environment.HBM2DDL_AUTO, "update");
+        sessionFactory = new Configuration().setProperties(properties)
+                .buildSessionFactory();
     }
 
     @Override
     public List<Player> getAll(int pageNumber, int pageSize) {
-        return null;
+        try(Session session = sessionFactory.openSession()){
+        NativeQuery<Player> nativeQuery = session.createNativeQuery("select * from player", Player.class);
+        return nativeQuery.list();
+        }//доработать посмотри разбор
     }
 
     @Override
     public int getAllCount() {
-        return 0;
-    }
+        try(Session session = sessionFactory.openSession()){
+        Query<Player> query = session.createNamedQuery("All_Players_Count", Player.class);
+        return query.executeUpdate();}
+    }//тоже доработай
 
     @Override
     public Player save(Player player) {
