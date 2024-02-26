@@ -1,27 +1,26 @@
 package com.game.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "player",schema = "rpg")
-@org.hibernate.annotations.NamedQuery(name = "All_Players_Count",
-        query = "SELECT count(*) from Player")
+@NamedQuery(name = "Player_getAllCount", query = "SELECT count(p) from Player p")
 public class Player {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
     private Long id;
     @Column(name = "name",length = 12,nullable = false)
     private String name;
     @Column(name = "title",length = 30,nullable = false)
     private String title;
     @Column(name = "race",nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Race race;
     @Column(name = "profession",nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Profession profession;
     @Column(name = "birthday",nullable = false)
     private Date birthday;
